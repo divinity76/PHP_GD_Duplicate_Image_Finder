@@ -1,3 +1,4 @@
+<?php
 class phpDupeImage {
 	
     // Copyright pawz, 2010.
