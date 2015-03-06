@@ -22,7 +22,9 @@ class phpDupeImage {
     // Sets the path to where completed files are stored for checking against.
     public $completed_files_path = '';                      
     // Sets the width and height of the thumbnail sized image we use for deep comparison.
-    public $small_size = 16;                                
+    public $small_size = 16;     
+	//pdo database connection.	
+	public $pdo_connection=false;
 
 
     /* *******************************************************
@@ -35,30 +37,20 @@ class phpDupeImage {
     *   It returns an md5 hash if unique or -1 if not.
     ******************************************************* */
     function is_unique($filename) {
-
         $fingerprint = $this->fingerprint($filename);
-        $sqlR = mysql_query("SELECT * FROM ".$this->image_table.
-        " WHERE ".$this->fingerprint_field." = '{$fingerprint}'");
-
-        if (mysql_num_rows($sqlR)) {
-            // If similar files exist, check them
-            $match_found = 0;
-            while ($row = mysql_fetch_assoc($sqlR)) {
+		$sqlR=$this->pdo_connection->query('SELECT `'.$this->filename_field.'` FROM `'.$this->image_table.'` WHERE `'.$this->fingerprint_field.'` = '.$this->pdo_connection->quote($fingerprint));
+		//Warning: SQLite3, for instance, does not support rowCount() for SELECT statements.
+		//$realRowCount=0;
+		while(false!==($row=$sqlR->fetch(PDO::FETCH_ASSOC))){
+			//++$realRowCount;
                 if ($this->are_duplicates($filename, 
                 $this->completed_files_path."/".$row[$this->filename_field])) {
-                    $match_found = 1;
-                }
-            }
-            if ($match_found) {
-                return -1;
-            } else {
-                return $fingerprint;
-            }
-        } else {
-            // No matching fingerprints found so return true.
-            return $fingerprint;
-        }
-
+					return -1;
+                }			
+		}
+		//var_dump('almost matches:',$realRowCount);
+	    // No matching fingerprints found so return true.
+		return $fingerprint;
     }
 
 
@@ -161,7 +153,7 @@ class phpDupeImage {
             if ($normhist[$i] > $max) {
                 $max = $normhist[$i];
             }
-        }   
+        }
 
         // Create a string from the histogram (with all possible values)
         $histstring = "";
@@ -187,5 +179,4 @@ class phpDupeImage {
         return $checksum;
 
     }
-
 }
