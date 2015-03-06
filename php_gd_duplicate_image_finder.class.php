@@ -137,7 +137,7 @@ class phpDupeImage {
                 $greyscale = round(($r * 0.3) + ($g * 0.59) + ($b * 0.11));                 
                 ++$greyscale;
                 $value = (round($greyscale / 16) * 16) -1;
-                $histogram[$value]++;
+                ++$histogram[$value];
             }
         }
 
@@ -149,7 +149,7 @@ class phpDupeImage {
 
         // Find maximum value (most frequent colour)
         $max = 0;
-        for ($i=0; $i<255; $i++) {
+        for ($i=0; $i<255; ++$i) {
             if ($normhist[$i] > $max) {
                 $max = $normhist[$i];
             }
