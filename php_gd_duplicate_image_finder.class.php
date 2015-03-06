@@ -78,8 +78,8 @@ class phpDupeImage {
         $this->small_size, $this->small_size, $image2_width, $image2_height);
 
         // Compare the pixels of each image and figure out the colour difference between them
-        for ($x = 0; $x < 16; $x++) {
-            for ($y = 0; $y < 16; $y++) {
+        for ($x = 0; $x < 16; ++$x) {
+            for ($y = 0; $y < 16; ++$y) {
                 $image1_color = imagecolorsforindex($image1_small, 
                 imagecolorat($image1_small, $x, $y));
                 $image2_color = imagecolorsforindex($image2_small, 
@@ -126,8 +126,8 @@ class phpDupeImage {
         // Convert each pixel to greyscale, round it off, and add it to the histogram count
         $numpixels = $newwidth * $newheight;
         $histogram = array();
-        for ($i = 0; $i < $newwidth; $i++) {
-            for ($j = 0; $j < $newheight; $j++) {
+        for ($i = 0; $i < $newwidth; ++$i) {
+            for ($j = 0; $j < $newheight; ++$j) {
                 $pos = imagecolorat($smallimage, $i, $j);
                 $cols = imagecolorsforindex($smallimage, $pos);
                 $r = $cols['red'];
@@ -135,7 +135,7 @@ class phpDupeImage {
                 $b = $cols['blue'];
                 // Convert the colour to greyscale using 30% Red, 59% Blue and 11% Green
                 $greyscale = round(($r * 0.3) + ($g * 0.59) + ($b * 0.11));                 
-                $greyscale++;
+                ++$greyscale;
                 $value = (round($greyscale / 16) * 16) -1;
                 $histogram[$value]++;
             }
